@@ -33,7 +33,7 @@ To build MIS:
 ```
 #!shell
 
-   g++  -o -togmus togmus.cpp -lz   
+   g++  -o togmus togmus.cpp -lz   
 
 
 ```
