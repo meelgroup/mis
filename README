@@ -1,4 +1,4 @@
-#MIS: Minimal Independent Support #
+# MIS: Minimal Independent Support #
 
 ### INSTALL ###
 MIS must be built using GCC 4.8.x or higher and requires libz.
