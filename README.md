@@ -4,19 +4,19 @@ MIS must be built using GCC 4.8.x or higher and requires libz.
 
 To build MIS:
 
-1) First compile MUser2 (refer to MUser2's README for further details):
+1) First compile MUser2  (refer to MUser2's README for further details):
    
    cd Muser2-Source/src/tools/muser2/
    make allclean
    make
+   Put the muser2 binary to the top directory. 
    
 2) Install libz if required:
 
    sudo apt-get install zlib1g-dev
    
 3) Compile togmus:
-
-   cd -
+  
    g++  -o -togmus togmus.cpp -lz   
 
 As described below, we provide the wrapper script 'ComputeMinimalIndependentSupport.py' in this directory as an easy way to invoke MIS.
