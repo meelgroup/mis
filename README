@@ -1,5 +1,5 @@
-Installing MIS
---------------
+# Installing MIS #
+
 MIS must be built using GCC 4.8.x or higher and requires libz.
 
 To build MIS:
@@ -23,8 +23,8 @@ As described below, we provide the wrapper script 'ComputeMinimalIndependentSupp
 
 
 
-Running MIS
----------------
+# Running MIS #
+
 You can run MIS using the 'ComputeMinimalIndependentSupport.py' Python script in this directory.
 For example, the command
 
@@ -33,7 +33,7 @@ For example, the command
 runs MIS on the DIMACS CNF file 'formula.cnf', writing the generated minimal independent support to a file called 'formula.out' with logfile log.txt and a timeout of 300 seconds.
 
 
----
-Contact
----
+
+# Contact #
+
 Kuldeep Meel (kuldeep@rice.edu)
