@@ -19,19 +19,19 @@ To build MIS:
   
    g++  -o -togmus togmus.cpp -lz   
 
-As described below, we provide the wrapper script 'ComputeMinimalIndependentSupport.py' in this directory as an easy way to invoke MIS.
+As described below, we provide the wrapper script 'MIS.py' in this directory as an easy way to invoke MIS.
 
 
 
 Running MIS
 ---------------
-You can run MIS using the 'ComputeMinimalIndependentSupport.py' Python script in this directory.
+You can run MIS using the 'MIS.py' Python script in this directory.
 For example, the command
 
-   python ComputeMinimalIndependentSupport.py formula.cnf formula.out log.txt 300
+   python MIS.py -output=formula.out -logging=1 -log=log.txt -timeout=300 formula.cnf 
 
 runs MIS on the DIMACS CNF file 'formula.cnf', writing the generated minimal independent support to a file called 'formula.out' with logfile log.txt and a timeout of 300 seconds.
-
+Run with '-h' option to print detailed usage.
 
 ---
 Contact
