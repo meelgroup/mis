@@ -76,7 +76,11 @@ def main():
     timeout, shouldLog, logFile, maxIters = defaultParams() 
     
     if (paramMap.has_key('timeout')):
-        timeout = float(paramMap['timeout'])+10 #extra protection for time sync
+        try:
+            timeout = float(paramMap['timeout'])+10 #extra protection for time sync
+        except:
+            print "Could not parse timeout value "+paramMap['timeout']+" as a number"
+            exit(1)
     if (paramMap.has_key('output')):
         outputFile = paramMap['output']
     if (paramMap.has_key('log')):
@@ -84,11 +88,17 @@ def main():
     if (paramMap.has_key('logging')):
         if (paramMap['logging'] == '0'):
             shouldLog = False
-        if (paramMap['logging'] == '1'):
+        elif (paramMap['logging'] == '1'):
             shouldLog = True
+        else:
+            print "logging can only take 0/1 values"
+            exit(1)
     if (paramMap.has_key('max')):
-        maxIters = paramMap['max']
-        
+        try:
+            maxIters = int(paramMap['max'])
+        except:
+            print "Could not parse max value "+paramMap['max']+" as a number"
+            exit(1)
     timeTaken = time.time()
     if extension =='.cnf':
         gmusFile = inputFile[:-4]+'.gcnf'
@@ -107,7 +117,7 @@ def main():
     indMap = {}
     maxTry = 10
     attempts = 0
-    for i in range(int(maxIters)):
+    for i in range(maxIters):
         timeTaken = time.time()
         cmd = './muser2 -v 0 -grp -comp -minisats -order 4 -T '+str(timeout)+' '+gmusFile+' > '+tempOutFile
         os.system(cmd)
