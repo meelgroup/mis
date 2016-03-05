@@ -13,9 +13,9 @@ To build MIS:
    cd Muser2-Source/src/tools/muser2/
    make allclean
    make
-   Put the muser2 binary to the top directory. 
 
 ```
+   Put the muser2 binary to the top directory. 
    
 2) Install libz if required:
 
