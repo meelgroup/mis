@@ -1,5 +1,12 @@
-Installing MIS
---------------
+# MIS #
+
+### What is it? ###
+MIS computes minimal Independent Support for a given CNF formula. The algorithm is based on our [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z) that also won the Best Student Paper Award. 
+
+
+
+### Installing MIS ###
+
 MIS must be built using GCC 4.8.x or higher and requires libz.
 
 To build MIS:
@@ -41,8 +48,8 @@ As described below, we provide the wrapper script 'MIS.py' in this directory as 
 
 
 
-Running MIS
----------------
+### Running MIS ###
+
 You can run MIS using the 'MIS.py' Python script in this directory.
 For example, the command
 
@@ -57,7 +64,7 @@ For example, the command
 runs MIS on the DIMACS CNF file 'formula.cnf', writing the generated minimal independent support to a file called 'formula.out' with logfile log.txt and a timeout of 300 seconds.
 Run with '-h' option to print detailed usage.
 
----
-Contact
----
+
+### Contact ###
+
 Kuldeep Meel (kuldeep@rice.edu)
