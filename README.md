@@ -1,7 +1,7 @@
 # MIS #
 
 ### What is it? ###
-MIS computes minimal Independent Support for a given CNF formula. The algorithm is based on our [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z) that also won the Best Student Paper Award. 
+MIS computes minimal Independent Support for a given CNF formula. The implementation is based on MIS algorithm proposed in our [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z) that also won the Best Student Paper Award. 
 
 
 
