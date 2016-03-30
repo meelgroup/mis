@@ -58,12 +58,13 @@ For example, the command
 ```
 #!shell
 
-   python MIS.py -output=formula.out -logging=1 -log=log.txt -timeout=300 formula.cnf 
+   python MIS.py -output=formula.out -logging=1 -log=log.txt -timeout=300 -useInd=1 formula.cnf 
 
 ```
 
 runs MIS on the DIMACS CNF file 'formula.cnf', writing the generated minimal independent support to a file called 'formula.out' with logfile log.txt and a timeout of 300 seconds.
-Run with '-h' option to print detailed usage.
+useInd=1 indicates to the program to find a minimal independent support over the user-supplied independent support given in formula.cnf in 'c ind' format.
+Run with '-h' option to print detailed usage and other advanced options.
 
 
 ### Contact ###
