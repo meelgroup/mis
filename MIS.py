@@ -17,13 +17,17 @@ def usage():
     usageStr += "logging: (optional) 0/1 : 0 for turnoff and 1 for turn on. (default: 0)\n"
     usageStr += "output: (optional) supply the output file destination (default: inputFileName.out)\n"
     usageStr += "log: (optional) supply the log file destination (deafult : log.txt)\n"
-    usageStr += "max: (optional) up to 'max' number of minimal independent supports will be generated (default: 1)"
+    usageStr += "max: (optional) up to 'max' number of minimal independent supports will be generated (default: 1)\n"
+    usageStr += "useInd: (optional) 0/1: 1 to use independent support provided in input file 0 to ignore (default: 0)\n"
+    usageStr += "firstInds: (optional) integer between 1 and number of variables. Indicates that variables 1 to firstInds should be used as an independent support. (default: uses all variables)\n"
+    usageStr += "If both useInd=1 and firstInds are specified, the union of both independent supports is considered.\n"
+    usageStr += "If useInd=1 but there is no independent support in input file, and firstInds is not specified all variables are considered\n"
     print usageStr
     exit(1)
 
 #returns default values for all parameters except outputfile which depends on inputfile
 def defaultParams():
-    return 3000, 0, 'log.txt', 1    #timeout, logging, log, max
+    return 3000, 0, 'log.txt', 1, 'false', 0    #timeout, logging, log, max, useInd, firstInds
 
 #action=0 -> print help
 #action=1 -> couldn't understand argument. error will pass the string
@@ -34,7 +38,7 @@ def getInputs():
     paramMap={}
     action=0
     error = ''
-    acceptedParams={'timeout','logging','output','log','max'}
+    acceptedParams={'timeout','logging','output','log','max','useInd','firstInds'}
     for i in range(1,len(sys.argv)):
         if (not(sys.argv[i][0] == '-')):
             paramMap['inputFile'] = sys.argv[i]
@@ -73,7 +77,7 @@ def main():
         outputFile =  inputFile[:-4]+".out"
     else:
         outputFile = inputFile+".out"
-    timeout, shouldLog, logFile, maxIters = defaultParams() 
+    timeout, shouldLog, logFile, maxIters, useInd, firstInds = defaultParams() 
     
     if (paramMap.has_key('timeout')):
         try:
@@ -99,19 +103,35 @@ def main():
         except:
             print "Could not parse max value "+paramMap['max']+" as a number"
             exit(1)
+    if (paramMap.has_key('useInd')):
+        if paramMap['useInd']=='1':
+            useInd='true'
+    if (paramMap.has_key('firstInds')):
+        try:
+            firstInds = int(paramMap['firstInds'])
+        except:
+            print "Could not parse firstInds "+paramMap['firstInds']+" as a number"
+            exit(1)
+        else:
+            if firstInds<1:
+                print "firstInds has to be greater than 1"
+                exit(1)
+
     timeTaken = time.time()
     if extension =='.cnf':
-        gmusFile = inputFile[:-4]+'.gcnf'
-        tempOutFile = inputFile[:-4]+'.tcnf'
+        gmusFile = outputFile[:-4]+'.gcnf'
+        tempOutFile = outputFile[:-4]+'.tcnf'
     else:
-        gmusFile = inputFile+'.gcnf'
-        tempOutFile = inputFile+'.tcnf'
+        gmusFile = outputFile+'.gcnf'
+        tempOutFile = outputFile+'.tcnf'
     f = open(outputFile,'w')
     f.close()
     if shouldLog==1:
         f = open(logFile,'w')
         f.close()
-    cmd = './togmus '+inputFile+' '+gmusFile
+    cmd = './togmus '+inputFile+' '+gmusFile+' '+useInd+' '+str(firstInds)
+    print cmd
+
     os.system(cmd)
     timeTaken = timeTaken-time.time()
     indMap = {}
