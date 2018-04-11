@@ -130,7 +130,7 @@ def main():
         f = open(logFile,'w')
         f.close()
     cmd = './togmus '+inputFile+' '+gmusFile+' '+useInd+' '+str(firstInds)
-    print cmd
+    #print cmd
 
     os.system(cmd)
     timeTaken = timeTaken-time.time()
