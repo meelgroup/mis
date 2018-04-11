@@ -182,22 +182,23 @@ def main():
     indMap = {}
     maxTry = 10
     attempts = 0
-    for i in range(maxIters):
+    i = 0
+    while i < maxIters:
         timeTaken = time.time()
         cmd = "./muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
             timeout, gmusFile, tempOutFile)
         os.system(cmd)
+
         indVars = parseOutput(tempOutFile)
         if indVars not in indMap:
             indMap[indVars] = 1
         else:
-
             attempts += 1
             if (attempts >= maxTry):
                 break
             else:
-                i -= 1
                 continue
+
         timeTaken = time.time() - timeTaken
         f = open(outputFile, 'a')
         f.write(indVars)
@@ -207,6 +208,8 @@ def main():
             f.write(str(i) + ':' + str(i + attempts) +
                     ':' + str(timeTaken) + '\n')
             f.close()
+        i += 1
+
     cmd = 'rm ' + tempOutFile
     os.system(cmd)
     cmd = 'rm ' + gmusFile
