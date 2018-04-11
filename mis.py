@@ -120,8 +120,7 @@ def main():
             # extra protection for time sync
             timeout = float(paramMap['timeout']) + 10
         except:
-            print("Could not parse timeout value " +
-                  paramMap['timeout'] + " as a number")
+            print("Timeout value '%d' not a number" % paramMap['timeout'])
             exit(1)
     if 'output' in paramMap:
         outputFile = paramMap['output']
@@ -154,13 +153,12 @@ def main():
         try:
             firstInds = int(paramMap['firstInds'])
         except:
-            print("Could not parse firstInds " +
-                  paramMap['firstInds'] + " as a number")
+            print("firstInds value '%s' not a number" % paramMap['firstInds'])
             exit(1)
-        else:
-            if firstInds < 1:
-                print("firstInds has to be greater than 1")
-                exit(1)
+
+        if firstInds < 1:
+            print("firstInds has to be greater than 1")
+            exit(1)
 
     timeTaken = time.time()
     if extension == '.cnf':
@@ -174,19 +172,20 @@ def main():
     if shouldLog == 1:
         f = open(logFile, 'w')
         f.close()
-    cmd = './togmus ' + inputFile + ' ' + \
-        gmusFile + ' ' + useInd + ' ' + str(firstInds)
+    cmd = "./togmus %s %s %s %s" % (inputFile, gmusFile, useInd, firstInds)
     print(cmd)
 
     os.system(cmd)
     timeTaken = timeTaken - time.time()
+
+    # run maxIters iterations
     indMap = {}
     maxTry = 10
     attempts = 0
     for i in range(maxIters):
         timeTaken = time.time()
-        cmd = './muser2 -v 0 -grp -comp -minisats -order 4 -T ' + \
-            str(timeout) + ' ' + gmusFile + ' > ' + tempOutFile
+        cmd = "./muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
+            timeout, gmusFile, tempOutFile)
         os.system(cmd)
         indVars = parseOutput(tempOutFile)
         if indVars not in indMap:
