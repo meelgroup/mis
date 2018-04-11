@@ -115,19 +115,21 @@ def main():
         outputFile = inputFile + ".out"
     timeout, shouldLog, logFile, maxIters, useInd, firstInds = defaultParams()
 
-    if (paramMap.has_key('timeout')):
+    if 'timeout' in paramMap:
         try:
             # extra protection for time sync
             timeout = float(paramMap['timeout']) + 10
-        except _:
+        except:
             print("Could not parse timeout value " +
                   paramMap['timeout'] + " as a number")
             exit(1)
-    if paramMap.has_key('output'):
+    if 'output' in paramMap:
         outputFile = paramMap['output']
-    if paramMap.has_key('log'):
+
+    if 'log' in paramMap:
         logFile = paramMap['log']
-    if paramMap.has_key('logging'):
+
+    if 'logging' in paramMap:
         if (paramMap['logging'] == '0'):
             shouldLog = False
         elif (paramMap['logging'] == '1'):
@@ -135,20 +137,23 @@ def main():
         else:
             print("logging can only take 0/1 values")
             exit(1)
-    if paramMap.has_key('max'):
+
+    if 'max' in paramMap:
         try:
             maxIters = int(paramMap['max'])
-        except _:
+        except:
             print("Could not parse max value " +
                   paramMap['max'] + " as a number")
             exit(1)
-    if paramMap.has_key('useInd'):
+
+    if 'useInd' in paramMap:
         if paramMap['useInd'] == '1':
             useInd = 'true'
-    if paramMap.has_key('firstInds'):
+
+    if 'firstInds' in paramMap:
         try:
             firstInds = int(paramMap['firstInds'])
-        except _:
+        except:
             print("Could not parse firstInds " +
                   paramMap['firstInds'] + " as a number")
             exit(1)
@@ -184,7 +189,7 @@ def main():
             str(timeout) + ' ' + gmusFile + ' > ' + tempOutFile
         os.system(cmd)
         indVars = parseOutput(tempOutFile)
-        if (not(indMap.has_key(indVars))):
+        if indVars not in indMap:
             indMap[indVars] = 1
         else:
 
