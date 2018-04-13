@@ -58,7 +58,7 @@ def set_up_parser():
                       help="Output file destination. Default is 'inputfile.ind'")
     parser.add_option("--log", dest="logfile", type=str, default="log.txt",
                       help="Log file destination. Deafult : %default")
-    parser.add_option("--max", dest="maxiters", type=int, default=1,
+    parser.add_option("--max", dest="maxiter", type=int, default=1,
                       help="up to 'max' number of minimal independent supports will be generated. Default: %default")
     parser.add_option("--firstinds", dest="firstinds", type=int,
                       default=1000000000,
@@ -94,7 +94,6 @@ if __name__ == "__main__":
 
     options.timeout += 10
 
-    maxiters = options.maxiters
     if options.firstinds < 1:
         print("firstinds has to be greater than 1")
         exit(-1)
@@ -122,7 +121,7 @@ if __name__ == "__main__":
     maxTry = 10
     attempts = 0
     i = 0
-    while i < maxiters:
+    while i < options.maxiter:
         timeTaken = time.time()
         cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
             options.timeout, gmusFile, tempOutFile)
@@ -134,7 +133,7 @@ if __name__ == "__main__":
             indMap[indvars] = 1
         else:
             attempts += 1
-            if (attempts >= maxTry):
+            if attempts >= maxTry:
                 break
             else:
                 continue
