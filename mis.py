@@ -185,7 +185,7 @@ def main():
     i = 0
     while i < maxIters:
         timeTaken = time.time()
-        cmd = "./muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
+        cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
             timeout, gmusFile, tempOutFile)
         os.system(cmd)
 
