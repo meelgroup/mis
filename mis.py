@@ -153,6 +153,7 @@ if __name__ == "__main__":
             i += 1
         else:
             print("c ind %s" % indvars)
+            print("num independent vars:", len(indvars.split())-1)
 
     os.unlink(tempOutFile)
     os.unlink(gmusFile)
