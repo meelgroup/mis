@@ -23,7 +23,6 @@
 from __future__ import with_statement  # Required in 2.5
 from __future__ import print_function
 
-import sys
 import os
 import time
 import optparse
