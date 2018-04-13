@@ -149,10 +149,10 @@ if __name__ == "__main__":
                 f.write(str(i) + ':' + str(i + attempts) +
                         ':' + str(timeTaken) + '\n')
                 f.close()
-            i += 1
         else:
             print("c ind %s" % indvars)
             print("num independent vars:", len(indvars.split())-1)
+        i += 1
 
     os.unlink(tempOutFile)
     os.unlink(gmusFile)
