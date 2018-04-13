@@ -76,4 +76,4 @@ Run with '-h' option to print detailed usage and other advanced options.
 
 ### Contact ###
 
-Kuldeep Meel (kuldeep@rice.edu)
+Kuldeep S. Meel (meel@comp.nus.edu.sg)

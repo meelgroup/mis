@@ -232,7 +232,7 @@ static void parse_convert_DIMACS_main(B& in, FILE *out, bool useInd, long int fi
 		//printf("%d ",i);
 	}
     }
-    printf("\n %d \n",vars);
+    //printf("\n %d \n",vars);
     exit(0);
 
 }    
