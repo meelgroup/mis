@@ -26,6 +26,7 @@ from __future__ import print_function
 import sys
 import os
 import time
+import optparse
 
 
 def parseOutput(fileName):
@@ -38,26 +39,40 @@ def parseOutput(fileName):
     return ''
 
 
-def usage():
-    usageStr = "Usage: python MIS.py [options] <inputFileName.cnf>\n"
-    usageStr += "options are entered as -object=value where object can be \n"
-    usageStr += "timeout: (optional) timeout for iteration in seconds (default:3000 seconds)\n"
-    usageStr += "logging: (optional) 0/1 : 0 for turnoff and 1 for turn on. (default: 0)\n"
-    usageStr += "output: (optional) supply the output file destination (default: inputFileName.out)\n"
-    usageStr += "log: (optional) supply the log file destination (deafult : log.txt)\n"
-    usageStr += "max: (optional) up to 'max' number of minimal independent supports will be generated (default: 1)\n"
-    usageStr += "useInd: (optional) 0/1: 1 to use independent support provided in input file 0 to ignore (default: 0)\n"
-    usageStr += "firstInds: (optional) integer between 1 and number of variables. Indicates that variables 1 to firstInds should be used as an independent support. (default: uses all variables)\n"
-    usageStr += "If both useInd=1 and firstInds are specified, the union of both independent supports is considered.\n"
-    usageStr += "If useInd=1 but there is no independent support in input file, and firstInds is not specified all variables are considered\n"
-    print(usageStr)
-    exit(1)
+usage = "usage: %prog [options] <input.cnf>"
+desc = """Gives the minimal independent set of the file.
 
-# returns default values for all parameters except outputfile which depends on inputfile
+If both --useind is set and --firstinds are specified, the union of both independent supports is considered
+
+If --useind is set but there is no independent support in input file, and --firstinds is not specified, all variables are considered
+"""
+
+
+def set_up_parser():
+    parser = optparse.OptionParser(usage=usage, description=desc)
+    parser.add_option("--timeout", metavar="TOUT", dest="timeout", type=int,
+                      default=3000, help="timeout for iteration in seconds (default: %default seconds)")
+    parser.add_option("--logging", action="store_true", default=False,
+                      dest="logging", help="To log more")
+    parser.add_option("--output", dest="outputfile", type=str, default=None,
+                      help="Output file destination. Default is 'inputfile.ind'")
+    parser.add_option("--log", dest="logfile", type=str, default="log.txt",
+                      help="Log file destination. Deafult : %default")
+    parser.add_option("--max", dest="maxiters", type=int, default=1,
+                      help="up to 'max' number of minimal independent supports will be generated. Default: %default")
+    parser.add_option("--firstinds", dest="firstinds", type=int,
+                      default=1000000000,
+                      help="between 1 and number of variables. Indicates that variables 1 to firstinds should be used as an independent support. Default: uses all variables")
+    parser.add_option("--useind", dest="useind", action="store_true",
+                      default=False,
+                      help="use independent support provided in input file")
+    parser.add_option("--verbose", "-v", action="store_true", default=False,
+                      dest="verbose", help="Print more output")
+    return parser
 
 
 def defaultParams():
-    # timeout, logging, log, max, useInd, firstInds
+    # timeout, logging, log, max, useInd, firstinds
     return 3000, 0, 'log.txt', 1, 'false', 0
 
 # action=0 -> print help
@@ -67,131 +82,57 @@ def defaultParams():
 # action=4 -> all set. go.
 
 
-def getInputs():
-    paramMap = {}
-    action = 0
-    error = ''
-    acceptedParams = {'timeout', 'logging', 'output',
-                      'log', 'max', 'useInd', 'firstInds'}
-    for i in range(1, len(sys.argv)):
-        if (not(sys.argv[i][0] == '-')):
-            paramMap['inputFile'] = sys.argv[i]
-            if i != len(sys.argv) - 1:
-                action = 3
-                error = "inputFileName should be last in param list. Use '-h' parameter to print usage."
-            else:
-                action = 4
-            return action, error, paramMap
-        else:
-            if (sys.argv[i][1] == 'h'):
-                action = 0
-                return action, error, paramMap
-            fieldValues = sys.argv[i][1:].strip().split('=')
-            if (not(fieldValues[0] in acceptedParams)):
-                action = 1
-                error = "Could not understand the option " + \
-                    str(fieldValues[0]) + "\n"
-                return action, error, paramMap
-            else:
-                paramMap[fieldValues[0]] = fieldValues[1]
-    action = 2
-    error = "No inputfile\n"
-    return action, error, paramMap
-
-
-def main():
-    action, error, paramMap = getInputs()
-    if (action == 0):
-        usage()
-        exit(1)
-    if (action == 1 or action == 2 or action == 3):
-        print(error)
-        exit(1)
-    inputFile = paramMap['inputFile']
-    extension = inputFile[-4:]
-    if extension == '.cnf':
-        outputFile = inputFile[:-4] + ".out"
+if __name__ == "__main__":
+    parser = set_up_parser()
+    (options, args) = parser.parse_args()
+    inputfile = args[0]
+    extension = inputfile[-4:]
+    if options.outputfile is not None:
+        outputfile = options.outputfile
     else:
-        outputFile = inputFile + ".out"
-    timeout, shouldLog, logFile, maxIters, useInd, firstInds = defaultParams()
+        outputfile = inputfile + ".ind"
 
-    if 'timeout' in paramMap:
-        try:
-            # extra protection for time sync
-            timeout = float(paramMap['timeout']) + 10
-        except:
-            print("Timeout value '%d' not a number" % paramMap['timeout'])
-            exit(1)
-    if 'output' in paramMap:
-        outputFile = paramMap['output']
+    if options.timeout:
+        timeout = options.timeout + 10
 
-    if 'log' in paramMap:
-        logFile = paramMap['log']
-
-    if 'logging' in paramMap:
-        if (paramMap['logging'] == '0'):
-            shouldLog = False
-        elif (paramMap['logging'] == '1'):
-            shouldLog = True
-        else:
-            print("logging can only take 0/1 values")
-            exit(1)
-
-    if 'max' in paramMap:
-        try:
-            maxIters = int(paramMap['max'])
-        except:
-            print("Could not parse max value " +
-                  paramMap['max'] + " as a number")
-            exit(1)
-
-    if 'useInd' in paramMap:
-        if paramMap['useInd'] == '1':
-            useInd = 'true'
-
-    if 'firstInds' in paramMap:
-        try:
-            firstInds = int(paramMap['firstInds'])
-        except:
-            print("firstInds value '%s' not a number" % paramMap['firstInds'])
-            exit(1)
-
-        if firstInds < 1:
-            print("firstInds has to be greater than 1")
-            exit(1)
+    maxiters = options.maxiters
+    if options.firstinds < 1:
+        print("firstinds has to be greater than 1")
+        exit(-1)
 
     timeTaken = time.time()
     if extension == '.cnf':
-        gmusFile = outputFile[:-4] + '.gcnf'
-        tempOutFile = outputFile[:-4] + '.tcnf'
+        gmusFile = inputfile[:-4] + '.gcnf'
+        tempOutFile = inputfile[:-4] + '.tcnf'
     else:
-        gmusFile = outputFile + '.gcnf'
-        tempOutFile = outputFile + '.tcnf'
-    f = open(outputFile, 'w')
-    f.close()
-    if shouldLog == 1:
-        f = open(logFile, 'w')
-        f.close()
-    cmd = "./togmus %s %s %s %s" % (inputFile, gmusFile, useInd, firstInds)
-    print(cmd)
+        gmusFile = outputfile + '.gcnf'
+        tempOutFile = outputfile + '.tcnf'
 
+    f = open(outputfile, 'w')
+    f.close()
+    if options.logging == 1:
+        f = open(options.logfile, 'w')
+        f.close()
+    cmd = "./togmus %s %s %s %s" % (inputfile, gmusFile, options.useind,
+                                    options.firstinds)
     os.system(cmd)
     timeTaken = timeTaken - time.time()
 
-    # run maxIters iterations
+    # run maxiters iterations
     indMap = {}
     maxTry = 10
     attempts = 0
     i = 0
-    while i < maxIters:
+    while i < maxiters:
         timeTaken = time.time()
         cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
             timeout, gmusFile, tempOutFile)
         os.system(cmd)
 
-        indVars = parseOutput(tempOutFile)
-        if indVars not in indMap:
-            indMap[indVars] = 1
+        indvars = parseOutput(tempOutFile)
+        indvars = indvars.strip().lstrip(" v ")
+        if indvars not in indMap:
+            indMap[indvars] = 1
         else:
             attempts += 1
             if (attempts >= maxTry):
@@ -200,20 +141,18 @@ def main():
                 continue
 
         timeTaken = time.time() - timeTaken
-        f = open(outputFile, 'a')
-        f.write(indVars)
-        f.close()
-        if shouldLog == 1:
-            f = open(logFile, 'a')
-            f.write(str(i) + ':' + str(i + attempts) +
-                    ':' + str(timeTaken) + '\n')
+        if options.outputfile is not None:
+            f = open(outputfile, 'a')
+            f.write(indvars)
             f.close()
-        i += 1
+            if options.logging == 1:
+                f = open(options.logfile, 'a')
+                f.write(str(i) + ':' + str(i + attempts) +
+                        ':' + str(timeTaken) + '\n')
+                f.close()
+            i += 1
+        else:
+            print("c ind %s" % indvars)
 
-    cmd = 'rm ' + tempOutFile
-    os.system(cmd)
-    cmd = 'rm ' + gmusFile
-    os.system(cmd)
-
-
-main()
+    os.unlink(tempOutFile)
+    os.unlink(gmusFile)
