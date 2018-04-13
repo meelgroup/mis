@@ -92,8 +92,7 @@ if __name__ == "__main__":
     else:
         outputfile = inputfile + ".ind"
 
-    if options.timeout:
-        timeout = options.timeout + 10
+    options.timeout += 10
 
     maxiters = options.maxiters
     if options.firstinds < 1:
@@ -126,7 +125,7 @@ if __name__ == "__main__":
     while i < maxiters:
         timeTaken = time.time()
         cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
-            timeout, gmusFile, tempOutFile)
+            options.timeout, gmusFile, tempOutFile)
         os.system(cmd)
 
         indvars = parseOutput(tempOutFile)
