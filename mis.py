@@ -65,6 +65,8 @@ def set_up_parser():
     parser.add_option("--useind", dest="useind", action="store_true",
                       default=False,
                       help="use independent support provided in input file")
+    parser.add_option("--glucose", action="store_true", default=False,
+                      dest="glucose", help="Use glucose in muser2")
     parser.add_option("--verbose", "-v", action="store_true", default=False,
                       dest="verbose", help="Print more output")
     return parser
@@ -122,8 +124,12 @@ if __name__ == "__main__":
     i = 0
     while i < options.maxiter:
         timeTaken = time.time()
-        cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
-            options.timeout, gmusFile, tempOutFile)
+        if options.glucose:
+            cmd = "muser2 -v 0 -grp -comp -glucose -order 4 -T %s %s > %s" % (
+                    options.timeout, gmusFile, tempOutFile)
+        else:
+            cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
+                    options.timeout, gmusFile, tempOutFile)
         os.system(cmd)
 
         indvars = parseOutput(tempOutFile)
