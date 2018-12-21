@@ -70,5 +70,5 @@ c ind 1 22 0
 
 The system then will find a minimal independent support that is a subset of the variables given.
 
-### Issues, questions, etc.
+### Issues, questions, bugs, etc.
 Please click on "issues" at the top and [create a new issue](https://github.com/meelgroup/mis/issues/new). All issues are responded to promptly.
