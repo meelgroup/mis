@@ -1,9 +1,8 @@
-# MIS #
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### What is it?
-MIS computes minimal Independent Support for a given CNF formula. The implementation is based on MIS algorithm proposed in our [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which also won the Best Student Paper Award. 
+MIS computes minimal independent support (MIS) for a given CNF formula. This means that it gives the user a set of variables that fully determine all the other variables' settings. So for example, if you give it an electronic circuit, it might give you all its input variables. It gives a minimal set, but it may not be the minimum set.
 
-MIS is licensed under the MIT license and built by Kuldeep Meel. It is currently maintined by Mate Soos.
+The implementation is based on MIS algorithm proposed in our [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which also won the Best Student Paper Award.
 
 ### Building
 MIS must be built using GCC 4.8.x or higher and requires libz.
@@ -19,17 +18,49 @@ cd ../../../../
 g++  -o togmus togmus.cpp -lz
 ```
 
-### Running
+### Usage
+Please beware that you *must* have a correct DIMACS header in your input 'formula.cnf' file:
 
 ```
-/.mis.py --out=formula.out --log=log.txt --timeout=300 --useind 1 formula.cnf
+$ ./mis.py formula.py
+Running togmus: './togmus formula.cnf formula.gcnf False'
+togmus executed in 0.01
+Running muser2: 'muser2 -v 0 -grp -comp -minisats -order 4 -T 310 formula.gcnf > formula.tcnf'
+muser2 executed in 0.25
+num independent vars: 19
+** Copy-paste the following line in the top of your CNF for ApproxMC **
+c ind 3 4 7 8 10 11 14 17 18 26 30 35 36 39 42 47 60 62 67 0
+```
+The system has found 19 variables to be a minimal independent support. It also prints the exact line you have to copy-paste to the top of your CNF file if you want to use our [ApproxMC](https://github.com/meelgroup/approxmc) approximate model counter. It is *highly* recommended to use MIS before running ApproxMC.
+
+
+You can try your luck and ask the system to try to find different minimal independent sets. It will then print the smallest:
 
 ```
+$ ./mis.py formula.cnf --maxiter 50
+[...]
+num independent vars: 17
+** Copy-paste the following line in the top of your CNF for ApproxMC **
+c ind 3 4 7 8 10 11 14 17 18 30 35 39 42 47 60 62 67 0
+```
 
-runs MIS on the DIMACS CNF file 'formula.cnf', writing the generated minimal independent support to a file called 'formula.out' with logfile log.txt and a timeout of 300 seconds.
-useInd=1 indicates to the program to find a minimal independent support over the user-supplied independent support given in formula.cnf in 'c ind' format.
-Run with '-h' option to print detailed usage and other advanced options.
+### Advanced usage
+In case you already have a set that you know is independent, and you want to minimise that, then you can give that set to the sytem by putting in your CNF a line that lists these variables (variable numbers start with 1), ending the line with a 0. For example, if variables 1, 5, 22 and 124 are independent you need to put at the top in the CNF:
 
+```
+c ind 1 5 22 124 0
+```
+
+Now you can run the tool with the option `--useind`:
+```
+$ ./mis.py formula.cnf --useind
+[...]
+num independent vars: 2
+** Copy-paste the following line in the top of your CNF for ApproxMC **
+c ind 1 22 0
+```
+
+The system then will find a minimal independent support that is a subset of the variables given.
 
 ### Contact ###
 

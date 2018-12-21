@@ -56,7 +56,7 @@ def set_up_parser():
                       help="Output file destination. Default is 'inputfile.ind'")
     parser.add_option("--log", dest="logfile", type=str, default="log.txt",
                       help="Log file destination. Deafult : %default")
-    parser.add_option("--max", dest="maxiter", type=int, default=1,
+    parser.add_option("--maxiter", dest="maxiter", type=int, default=1,
                       help="up to 'max' number of minimal independent supports will be generated. Default: %default")
     parser.add_option("--useind", dest="useind", action="store_true",
                       default=False,
@@ -135,8 +135,9 @@ if __name__ == "__main__":
                 with open(options.logfile, 'a') as f:
                     f.write("%d:%d:%3.2f\n" % (i, i + attempts, mytime))
         else:
-            print("c ind %s" % indvars)
             print("num independent vars:", len(indvars.split())-1)
+            print("** Copy-paste the following line in the top of your CNF for ApproxMC **")
+            print("c ind %s" % indvars)
 
     os.unlink(tempOutFile)
     os.unlink(gmusFile)
