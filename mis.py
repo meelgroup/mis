@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # Copyright (C) 2016-2018   Kuldeep S. Meel
 # Copyright (C) 2018        Mate Soos
@@ -51,43 +50,32 @@ def set_up_parser():
     parser = optparse.OptionParser(usage=usage, description=desc)
     parser.add_option("--timeout", metavar="TOUT", dest="timeout", type=int,
                       default=3000, help="timeout for iteration in seconds (default: %default seconds)")
-    parser.add_option("--logging", action="store_true", default=False,
-                      dest="logging", help="To log more")
-    parser.add_option("--output", dest="outputfile", type=str, default=None,
+    parser.add_option("--verb,-v", default=1, type=int,
+                      dest="verbosity", help="Higher numbers for more verbosity")
+    parser.add_option("--out", dest="outputfile", type=str, default=None,
                       help="Output file destination. Default is 'inputfile.ind'")
     parser.add_option("--log", dest="logfile", type=str, default="log.txt",
                       help="Log file destination. Deafult : %default")
     parser.add_option("--max", dest="maxiter", type=int, default=1,
                       help="up to 'max' number of minimal independent supports will be generated. Default: %default")
-    parser.add_option("--firstinds", dest="firstinds", type=int,
-                      default=1000000000,
-                      help="between 1 and number of variables. Indicates that variables 1 to firstinds should be used as an independent support. Default: uses all variables")
     parser.add_option("--useind", dest="useind", action="store_true",
                       default=False,
                       help="use independent support provided in input file")
     parser.add_option("--glucose", action="store_true", default=False,
                       dest="glucose", help="Use glucose in muser2")
-    parser.add_option("--verbose", "-v", action="store_true", default=False,
-                      dest="verbose", help="Print more output")
     return parser
-
-
-def defaultParams():
-    # timeout, logging, log, max, useInd, firstinds
-    return 3000, 0, 'log.txt', 1, 'false', 0
-
-# action=0 -> print help
-# action=1 -> couldn't understand argument. error will pass the string
-# action=2 -> no inputfile
-# action=3 -> input file not last in argument list. Fail gracefully with error to avoid confusion with old style of arguments
-# action=4 -> all set. go.
 
 
 if __name__ == "__main__":
     parser = set_up_parser()
     (options, args) = parser.parse_args()
+
+    if len(args) < 1:
+        print("ERROR: you must give a CNF input file as a parameter")
+        exit(-1)
+
     inputfile = args[0]
-    extension = inputfile[-4:]
+
     if options.outputfile is not None:
         outputfile = options.outputfile
     else:
@@ -95,12 +83,8 @@ if __name__ == "__main__":
 
     options.timeout += 10
 
-    if options.firstinds < 1:
-        print("firstinds has to be greater than 1")
-        exit(-1)
-
-    timeTaken = time.time()
-    if extension == '.cnf':
+    mytime = time.time()
+    if len(inputfile) > 4 and inputfile[-4:] == '.cnf':
         gmusFile = inputfile[:-4] + '.gcnf'
         tempOutFile = inputfile[:-4] + '.tcnf'
     else:
@@ -109,13 +93,11 @@ if __name__ == "__main__":
 
     f = open(outputfile, 'w')
     f.close()
-    if options.logging == 1:
-        f = open(options.logfile, 'w')
-        f.close()
-    cmd = "./togmus %s %s %s %s" % (inputfile, gmusFile, options.useind,
-                                    options.firstinds)
+
+    cmd = "./togmus %s %s %s" % (inputfile, gmusFile, options.useind)
+    print("Running togmus: '%s'" % cmd)
     os.system(cmd)
-    timeTaken = timeTaken - time.time()
+    print("togmus executed in %-3.2f" % (time.time()-mytime))
 
     # run maxiters iterations
     indMap = {}
@@ -123,15 +105,16 @@ if __name__ == "__main__":
     attempts = 0
     i = 0
     while i < options.maxiter:
-        timeTaken = time.time()
+        mytime = time.time()
         if options.glucose:
             cmd = "muser2 -v 0 -grp -comp -glucose -order 4 -T %s %s > %s" % (
                     options.timeout, gmusFile, tempOutFile)
         else:
             cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
                     options.timeout, gmusFile, tempOutFile)
-        print("running muser2...")
+        print("Running muser2: '%s'" % cmd)
         os.system(cmd)
+        print("muser2 executed in %-3.2f" % (time.time()-mytime))
 
         indvars = parseOutput(tempOutFile)
         indvars = indvars.strip().lstrip(" v ")
@@ -144,16 +127,14 @@ if __name__ == "__main__":
             else:
                 continue
 
-        timeTaken = time.time() - timeTaken
+        mytime = time.time() - mytime
         if options.outputfile is not None:
-            f = open(outputfile, 'a')
-            f.write(indvars)
-            f.close()
-            if options.logging == 1:
-                f = open(options.logfile, 'a')
-                f.write(str(i) + ':' + str(i + attempts) +
-                        ':' + str(timeTaken) + '\n')
-                f.close()
+            with open(outputfile, 'a') as f:
+                f.write(indvars)
+
+            if options.verbosity == 1:
+                with open(options.logfile, 'a') as f:
+                    f.write("%d:%d:%3.2f\n" % (i, i + attempts, mytime))
         else:
             print("c ind %s" % indvars)
             print("num independent vars:", len(indvars.split())-1)
