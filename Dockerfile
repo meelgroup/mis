@@ -11,11 +11,13 @@ RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y make g++
 RUN apt-get install --no-install-recommends -y zlib1g-dev git libboost-dev
+RUN apt-get install --no-install-recommends -y git
 
 # build mis
 USER root
 COPY . /mis
 WORKDIR /mis
+RUN git clone https://bitbucket.org/anton_belov/muser2 muser2-dir
 RUN make
 
 # set up for running
