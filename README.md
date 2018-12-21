@@ -5,10 +5,9 @@ MIS computes **minimal independent support** for a given CNF formula. This means
 The implementation is based on MIS algorithm by Alexander Ivrii, Sharad Malik and Kuldeep Meel, see [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which won the Best Student Paper Award. MIS uses [MUSer2](https://bitbucket.org/anton_belov/muser2) by Anton Belov and Joao Marques-Silva, paper [here](https://satassociation.org/jsat/index.php/jsat/article/view/101).
 
 ### Building
-MIS must be built using GCC 4.8.x or higher and requires libz.
 
 ```
-apt-get install minisat2 zlib1g-dev
+apt-get install minisat2 zlib1g-dev g++
 git clone git@bitbucket.org:kuldeepmeel/mis.git --recursive
 cd mis
 make
