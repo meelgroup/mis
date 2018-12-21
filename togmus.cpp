@@ -178,15 +178,14 @@ static int b(int x)
 }
 
 template <class B>
-static void parse_convert_DIMACS_main(B& in, FILE* out, bool useInd,
-                                      long int firstInds)
+static void parse_convert_DIMACS_main(B& in, FILE* out, bool useInd)
 {
     bool printHeader =
         true; // HACK: on some unigen benchmarks the line "p cnf" appears multiple times
     vector<int> lits;
 
-    vector<bool>
-        seenInds; // some benchmarks include user suggestion for what the independent support should be
+    // some benchmarks include user suggestion for what the independent support should be
+    vector<bool> seenInds;
 
     for (;;) {
         skipWhitespace(in);
@@ -276,10 +275,10 @@ static void parse_convert_DIMACS_main(B& in, FILE* out, bool useInd,
 
     for (int i = 1; i <= vars; ++i) {
         // {i} (a_i)
-        if ((!useInd && (firstInds == 0 || i <= firstInds)) ||
-            (useInd && ((includeAll && (firstInds == 0 || i <= firstInds)) ||
-                        (!includeAll && ((firstInds == 0 && seenInds[i]) ||
-                                         (i <= firstInds || seenInds[i])))))) {
+        if ((!useInd ||
+            (useInd && (includeAll || (!includeAll && seenInds[i])))
+            )
+        ) {
             fprintf(out, "{%d} %d 0\n", i, a(i));
             //printf("%d ",i);
         }
@@ -288,25 +287,21 @@ static void parse_convert_DIMACS_main(B& in, FILE* out, bool useInd,
     exit(0);
 }
 
-static void parse_convert_DIMACS(gzFile input_stream, FILE* out, bool useInd,
-                                 long int firstInds)
+static void parse_convert_DIMACS(gzFile input_stream, FILE* out, bool useInd)
 {
     StreamBuffer in(input_stream);
-    parse_convert_DIMACS_main(in, out, useInd, firstInds);
+    parse_convert_DIMACS_main(in, out, useInd);
 }
 
 int main(int argc, char** argv)
 {
     if (argc < 3 || argc > 5) {
-        printf("USAGE: <converter> input file, output file [useInd] [n]\n\n");
+        printf("USAGE: <converter> input file, output file [useInd]\n\n");
         printf(
             "useInd: (optional)  indicates whether to use the independent "
             "support supplied in input cnf file in 'c ind' format (default: "
             "false)\n.[Note:} If useInd is true and no independent support is "
             "given in cnf file, all variables are considered.\n");
-        printf(
-            "n: (optional) indicates that variables 1 to n are an independent "
-            "support. (default:0");
         printf(
             "[Note:] If an independent support is supplied both by specifying "
             "n and useInd as true, then the union of the two independent "
@@ -334,19 +329,13 @@ int main(int argc, char** argv)
 
     bool useInd = false;
     if (argc > 3) {
-    std:
-        string indParam = argv[3];
+        std::string indParam = argv[3];
         if (indParam.compare("true") == 0) {
             useInd = true;
         }
     }
 
-    long int firstInds = 0;
-    if (argc == 5) {
-        firstInds = strtol(argv[4], NULL, 0);
-    }
-
-    parse_convert_DIMACS(in, out, useInd, firstInds);
+    parse_convert_DIMACS(in, out, useInd);
 
     gzclose(in);
     fclose(out);
