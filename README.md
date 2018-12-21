@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-MIS computes minimal independent support (MIS) for a given CNF formula. This means that it gives the user a set of variables that fully determine all the other variables' settings. So for example, if you give it an electronic circuit, it might give you all its input variables. It gives a minimal set, but it may not be the minimum set.
+MIS computes **minimal independent support** for a given CNF formula. This means that it gives the user a set of variables that fully determine all the other variables' settings. So for example, if you give it an electronic circuit, it might give you all its input variables. It gives a minimal set, but it may not be the minimum set.
 
 The implementation is based on MIS algorithm proposed in our [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which also won the Best Student Paper Award.
 
