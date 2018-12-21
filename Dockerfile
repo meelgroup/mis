@@ -1,0 +1,37 @@
+FROM ubuntu:16.04 as builder
+
+LABEL maintainer="Mate Soos"
+LABEL version="1.0"
+LABEL Description="MIS"
+
+# get curl, etc
+RUN apt-get update && apt-get install --no-install-recommends -y software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y make g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# build mis
+USER root
+COPY . /mis
+WORKDIR /mis
+RUN make
+
+# set up for running
+FROM ubuntu:16.04
+RUN apt-get update && apt-get install --no-install-recommends -y python3 \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /mis/mis.py /usr/local/bin/
+COPY --from=builder /mis/muser2 /usr/local/bin/
+COPY --from=builder /mis/togmus /usr/local/bin/
+ENTRYPOINT ["/usr/local/mis.py"]
+
+# --------------------
+# HOW TO USE
+# --------------------
+# on a file:
+#    docker run --rm -v `pwd`/myfile.cnf.gz:/in msoos/mis in
