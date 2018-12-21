@@ -5,15 +5,12 @@ LABEL version="1.0"
 LABEL Description="MIS"
 
 # get curl, etc
-RUN apt-get update && apt-get install --no-install-recommends -y software-properties-common \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y make g++ \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y software-properties-common
+RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y make g++
+RUN apt-get install --no-install-recommends -y zlib1g-dev git libboost-dev
 
 # build mis
 USER root
@@ -28,10 +25,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y python3 \
 COPY --from=builder /mis/mis.py /usr/local/bin/
 COPY --from=builder /mis/muser2 /usr/local/bin/
 COPY --from=builder /mis/togmus /usr/local/bin/
-ENTRYPOINT ["/usr/local/mis.py"]
+WORKDIR /usr/local/bin/
+ENTRYPOINT ["/usr/local/bin/mis.py"]
 
 # --------------------
 # HOW TO USE
 # --------------------
 # on a file:
-#    docker run --rm -v `pwd`/myfile.cnf.gz:/in msoos/mis in
+#    docker run --rm -v `pwd`/formula.cnf:/in msoos/mis /in

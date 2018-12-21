@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (C) 2016-2018   Kuldeep S. Meel
 # Copyright (C) 2018        Mate Soos
