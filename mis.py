@@ -130,6 +130,7 @@ if __name__ == "__main__":
         else:
             cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
                     options.timeout, gmusFile, tempOutFile)
+        print("running muser2...")
         os.system(cmd)
 
         indvars = parseOutput(tempOutFile)
