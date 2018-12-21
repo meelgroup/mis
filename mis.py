@@ -103,8 +103,7 @@ if __name__ == "__main__":
     indMap = {}
     maxTry = 10
     attempts = 0
-    i = 0
-    while i < options.maxiter:
+    for i in range(options.maxiter):
         mytime = time.time()
         if options.glucose:
             cmd = "muser2 -v 0 -grp -comp -glucose -order 4 -T %s %s > %s" % (
@@ -138,7 +137,6 @@ if __name__ == "__main__":
         else:
             print("c ind %s" % indvars)
             print("num independent vars:", len(indvars.split())-1)
-        i += 1
 
     os.unlink(tempOutFile)
     os.unlink(gmusFile)
