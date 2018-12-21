@@ -11,11 +11,7 @@ MIS must be built using GCC 4.8.x or higher and requires libz.
 apt-get install minisat2 zlib1g-dev
 git clone git@bitbucket.org:kuldeepmeel/mis.git --recursive
 cd mis
-cd muser2-dir/src/tools/muser2
 make
-cp muser2 ../../../../
-cd ../../../../
-g++  -o togmus togmus.cpp -lz
 ```
 
 ### Usage
@@ -33,8 +29,20 @@ c ind 3 4 7 8 10 11 14 17 18 26 30 35 36 39 42 47 60 62 67 0
 ```
 The system has found 19 variables to be a minimal independent support. It also prints the exact line you have to copy-paste to the top of your CNF file if you want to use our [ApproxMC](https://github.com/meelgroup/approxmc) approximate model counter. It is *highly* recommended to use MIS before running ApproxMC.
 
+In case the above doesn't terminate, you can ask the system to give you a non-minimal, but hopefully relatively small, independent support. Just add `--timeout X` where `X` is the number of seconds:
 
-You can try your luck and ask the system to try to find different minimal independent sets. It will then print the smallest:
+```
+$ ./mis.py --timeout 100 formula.cnf
+Running togmus: './togmus formula.cnf formula.gcnf False'
+togmus executed in 0.01
+Running muser2: 'muser2 -v 0 -grp -comp -minisats -order 4 -T 310 formula.gcnf > formula.tcnf'
+muser2 executed in 0.25
+num independent vars: 22
+** Copy-paste the following line in the top of your CNF for ApproxMC **
+c ind 3 4 7 8 10 11 14 17 18 19 26 30 31 35 36 39 42 47 60 62 63 67 0
+```
+
+You can try your luck and ask the system to try to find different minimal independent sets. It will then print only the smallest:
 
 ```
 $ ./mis.py formula.cnf --maxiter 50
@@ -44,7 +52,8 @@ num independent vars: 17
 c ind 3 4 7 8 10 11 14 17 18 30 35 39 42 47 60 62 67 0
 ```
 
-### Advanced usage
+
+### Minimising an independent support
 In case you already have a set that you know is independent, and you want to minimise that, then you can give that set to the sytem by putting in your CNF a line that lists these variables (variable numbers start with 1), ending the line with a 0. For example, if variables 1, 5, 22 and 124 are independent you need to put at the top in the CNF:
 
 ```
@@ -62,6 +71,5 @@ c ind 1 22 0
 
 The system then will find a minimal independent support that is a subset of the variables given.
 
-### Contact ###
-
-Kuldeep S. Meel (meel@comp.nus.edu.sg)
+### Issues, questions, etc.
+Please click on "issues" at the top and [create a new issue](https://github.com/meelgroup/mis/issues/new). All issues are responded to promptly.
