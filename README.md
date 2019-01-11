@@ -2,7 +2,7 @@
 
 MIS computes **minimal independent support** for a given CNF formula. This means that it gives the user a set of variables that fully determine all the other variables' settings. So for example, if you give it an electronic circuit, it might give you all its input variables. It gives a minimal set, but it may not be the minimum set.
 
-The implementation is based on MIS algorithm by Alexander Ivrii, Sharad Malik and Kuldeep Meel, see [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which won the Best Student Paper Award. MIS uses [MUSer2](https://bitbucket.org/anton_belov/muser2) by Anton Belov and Joao Marques-Silva, paper [here](https://satassociation.org/jsat/index.php/jsat/article/view/101).
+The implementation is based on MIS algorithm by Alexander Ivrii, Sharad Malik, Kuldeep Meel, and Moshe Vardi see [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which won the Best Student Paper Award. MIS uses [MUSer2](https://bitbucket.org/anton_belov/muser2) by Anton Belov and Joao Marques-Silva, paper [here](https://satassociation.org/jsat/index.php/jsat/article/view/101).
 
 ### Docker usage
 Run on a file `formula.cnf`:
