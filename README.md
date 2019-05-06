@@ -5,7 +5,7 @@ MIS computes **minimal independent support** for a given CNF formula. This means
 The implementation is based on MIS algorithm by Alexander Ivrii, Sharad Malik, Kuldeep Meel, and Moshe Vardi see [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which won the Best Student Paper Award. MIS uses [MUSer2](https://bitbucket.org/anton_belov/muser2) by Anton Belov and Joao Marques-Silva, paper [here](https://satassociation.org/jsat/index.php/jsat/article/view/101).
 
 ### Docker usage
-Run on a file `formula.cnf`:
+Run on a file `formula.cnf` that **must** have a correct DIMACS header `p cnf vars clauses`:
 
 ```
 docker run --rm -v `pwd`/formula.cnf:/in msoos/mis /in
