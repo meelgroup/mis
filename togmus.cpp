@@ -330,7 +330,7 @@ int main(int argc, char** argv)
     bool useInd = false;
     if (argc > 3) {
         std::string indParam = argv[3];
-        if (indParam.compare("true") == 0) {
+        if (indParam.compare("True") == 0) {
             useInd = true;
         }
     }
