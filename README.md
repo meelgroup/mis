@@ -22,10 +22,10 @@ make
 ```
 
 ### Usage
-Please beware that you *must* have a correct DIMACS header in your input 'formula.cnf' file. Then, for a timeout of 10 seconds, run as:
+Please beware that you *must* have a correct DIMACS header in your input 'formula.cnf' file, then run:
 
 ```
-$ ./mis.py --timeout=10 formula.cnf
+$ ./mis.py formula.cnf
 Running togmus: './togmus formula.cnf formula.gcnf False'
 togmus executed in 0.01
 Running muser2: 'muser2 -v 0 -grp -comp -minisats -order 4 -T 310 formula.gcnf > formula.tcnf'
