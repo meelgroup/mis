@@ -36,7 +36,7 @@ c ind 3 4 7 8 10 11 14 17 18 26 30 35 36 39 42 47 60 62 67 0
 ```
 The system has found 19 variables to be a minimal independent support. It also prints the exact line you have to copy-paste to the top of your CNF file if you want to use our [ApproxMC](https://github.com/meelgroup/approxmc) approximate model counter. It is *highly* recommended to use MIS before running ApproxMC.
 
-In case the above doesn't terminate, you can ask the system to give you a non-minimal, but hopefully relatively small, independent support. Just add `--timeout X` where `X` is the number of seconds:
+In case the above doesn't terminate, you can push Ctrl+C and it will print the intermediary best independent set. Or you can run the above command with an explicit timeout using the `--timeout` option, giving timeout in seconds:
 
 ```
 $ ./mis.py --timeout 100 formula.cnf
@@ -48,6 +48,8 @@ num independent vars: 22
 ** Copy-paste the following line in the top of your CNF for ApproxMC **
 c ind 3 4 7 8 10 11 14 17 18 19 26 30 31 35 36 39 42 47 60 62 63 67 0
 ```
+
+### Better Independent Sets
 
 You can try your luck and ask the system to try to find different minimal independent sets. It will then print only the smallest:
 
