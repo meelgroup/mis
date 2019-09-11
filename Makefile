@@ -12,6 +12,9 @@ all:
 	cd muser2-dir/src/wraps-2 && $(MAKE) -j4
 	cd muser2-dir/src/tools/muser2 && $(MAKE) -j4
 clean:
+	cd muser2-dir/src/wraps && $(MAKE) clean
+	cd muser2-dir/src/clset && $(MAKE) clean
+	cd muser2-dir/src/wraps-2 && $(MAKE) clean
 	cd muser2-dir/src/tools/muser2 && $(MAKE) clean
 	find . -type f -name *.o -delete
 	find . -type f -name *.so -delete
