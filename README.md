@@ -15,9 +15,9 @@ docker run --rm -v `pwd`/formula.cnf:/in msoos/mis /in
 
 ```
 apt-get install minisat2 zlib1g-dev g++
-git clone git@bitbucket.org:kuldeepmeel/mis.git
+git clone https://github.com/meelgroup/mis
 cd mis
-git clone https://bitbucket.org/anton_belov/muser2 muser2-dir
+git submodule update --init
 make
 ```
 
