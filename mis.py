@@ -52,6 +52,9 @@ def set_up_parser():
                       default=3000, help="timeout for iteration in seconds (default: %default seconds)")
     parser.add_option("--verb,-v", default=1, type=int,
                       dest="verbosity", help="Higher numbers for more verbosity")
+    parser.add_option("--noclean", action="store_true", default=False,
+                      dest="noclean", help="Don't clean up temporary files")
+
     parser.add_option("--out", dest="outputfile", type=str, default=None,
                       help="Output file destination. Default is 'inputfile.ind'")
     parser.add_option("--log", dest="logfile", type=str, default="log.txt",
@@ -141,5 +144,6 @@ if __name__ == "__main__":
             print("** Copy-paste the following line in the top of your CNF for ApproxMC **")
             print("c ind %s" % indvars)
 
-    os.unlink(tempOutFile)
-    os.unlink(gmusFile)
+    if not options.noclean:
+        os.unlink(tempOutFile)
+        os.unlink(gmusFile)
