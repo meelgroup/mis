@@ -63,6 +63,10 @@ def set_up_parser():
                       help="use independent support provided in input file")
     parser.add_option("--glucose", action="store_true", default=False,
                       dest="glucose", help="Use glucose in muser2")
+    parser.add_option("--bin", type=str, default="./muser2-dir/src/tools/muser2/muser2",
+                      dest="bin", help="muser2 binary to use")
+
+
     return parser
 
 
@@ -104,11 +108,11 @@ if __name__ == "__main__":
     for i in range(options.maxiter):
         mytime = time.time()
         if options.glucose:
-            cmd = "muser2 -v 0 -grp -comp -glucose -order 4 -T %s %s > %s" % (
-                    options.timeout, gmusFile, tempOutFile)
+            cmd = "%s -v 0 -grp -comp -glucose -order 4 -T %s %s > %s" % (
+                    options.bin, options.timeout, gmusFile, tempOutFile)
         else:
-            cmd = "muser2 -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
-                    options.timeout, gmusFile, tempOutFile)
+            cmd = "%s -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
+                    options.bin, options.timeout, gmusFile, tempOutFile)
         print("Running muser2: '%s'" % cmd)
         os.system(cmd)
         print("muser2 executed in %-3.2f" % (time.time()-mytime))
