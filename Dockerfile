@@ -17,7 +17,7 @@ RUN apt-get install --no-install-recommends -y git
 USER root
 COPY . /mis
 WORKDIR /mis
-RUN git clone https://bitbucket.org/anton_belov/muser2 muser2-dir
+RUN git submodule update --init
 RUN make
 
 # set up for running
@@ -27,8 +27,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y python3 \
 COPY --from=builder /mis/mis.py /usr/local/bin/
 COPY --from=builder /mis/muser2 /usr/local/bin/
 COPY --from=builder /mis/togmus /usr/local/bin/
+COPY --from=builder /mis/muser2-dir/src/tools/muser2/muser2 /usr/local/bin/
 WORKDIR /usr/local/bin/
-ENTRYPOINT ["/usr/local/bin/mis.py"]
+CMD ["/usr/local/bin/mis.py", "--bin","muser2"]
 
 # --------------------
 # HOW TO USE
