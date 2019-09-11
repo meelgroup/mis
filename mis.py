@@ -81,8 +81,6 @@ if __name__ == "__main__":
     else:
         outputfile = inputfile + ".ind"
 
-    options.timeout += 10
-
     mytime = time.time()
     if len(inputfile) > 4 and inputfile[-4:] == '.cnf':
         gmusFile = inputfile[:-4] + '.gcnf'
