@@ -17,7 +17,7 @@ RUN apt-get install --no-install-recommends -y git
 USER root
 COPY . /mis
 WORKDIR /mis
-RUN git checkout https://github.com/meelgroup/muser muser2-dir
+RUN git clone https://github.com/meelgroup/muser muser2-dir
 RUN make static
 
 # set up for running
