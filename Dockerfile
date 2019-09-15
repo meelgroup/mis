@@ -18,7 +18,7 @@ USER root
 COPY . /mis
 WORKDIR /mis
 RUN git checkout https://github.com/meelgroup/muser muser2-dir
-RUN make
+RUN make static
 
 # set up for running
 FROM ubuntu:16.04
