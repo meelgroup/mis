@@ -17,7 +17,7 @@ RUN apt-get install --no-install-recommends -y git
 USER root
 COPY . /mis
 WORKDIR /mis
-RUN git submodule update --init
+RUN git checkout https://github.com/meelgroup/muser muser2-dir
 RUN make
 
 # set up for running
