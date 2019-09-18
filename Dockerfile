@@ -26,7 +26,6 @@ FROM ubuntu:16.04
 RUN apt-get update && apt-get install --no-install-recommends -y python3 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /mis/mis.py /usr/local/bin/
-COPY --from=builder /mis/muser2 /usr/local/bin/
 COPY --from=builder /mis/togmus /usr/local/bin/
 COPY --from=builder /mis/muser2-dir/src/tools/muser2/muser2 /usr/local/bin/
 WORKDIR /usr/local/bin/
