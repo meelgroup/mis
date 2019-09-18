@@ -29,7 +29,7 @@ COPY --from=builder /mis/mis.py /usr/local/bin/
 COPY --from=builder /mis/togmus /usr/local/bin/
 COPY --from=builder /mis/muser2-dir/src/tools/muser2/muser2 /usr/local/bin/
 WORKDIR /usr/local/bin/
-CMD ["/usr/local/bin/mis.py", "--bin","muser2"]
+ENTRYPOINT ["/usr/local/bin/mis.py", "--bin","./muser2"]
 
 # --------------------
 # HOW TO USE
