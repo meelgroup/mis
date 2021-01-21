@@ -89,12 +89,8 @@ if __name__ == "__main__":
         outputfile = inputfile + ".ind"
 
     mytime = time.time()
-    if len(inputfile) > 4 and inputfile[-4:] == '.cnf':
-        gmusFile = inputfile[:-4] + '.gcnf'
-        tempOutFile = inputfile[:-4] + '.tcnf'
-    else:
-        gmusFile = outputfile + '.gcnf'
-        tempOutFile = outputfile + '.tcnf'
+    gmusFile = outputfile + '.gcnf'
+    tempOutFile = outputfile + '.tcnf'
 
     f = open(outputfile, 'w')
     f.close()
