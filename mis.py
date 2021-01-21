@@ -28,13 +28,13 @@ import optparse
 
 
 def parseOutput(fileName):
-    f = open(fileName, 'r')
-    lines = f.readlines()
-    f.close()
-    for line in lines:
-        if (line.strip().startswith('v')):
-            return line
-    return ''
+    with open(fileName, 'r') as f:
+        lines = f.readlines()
+        f.close()
+        for line in lines:
+            if (line.strip().startswith('v')):
+                return line
+        return ''
 
 
 usage = "usage: %prog [options] <input.cnf>"
