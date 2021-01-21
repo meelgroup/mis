@@ -66,7 +66,7 @@ def set_up_parser():
                       help="use independent support provided in input file")
     parser.add_option("--glucose", action="store_true", default=False,
                       dest="glucose", help="Use glucose in muser2")
-    parser.add_option("--bin", type=str, default="./muser2-dir/src/tools/muser2/muser2",
+    parser.add_option("--muser2bin", type=str, default="./muser2-dir/src/tools/muser2/muser2",
                       dest="bin", help="muser2 binary to use")
 
 
