@@ -49,7 +49,7 @@ If --useind is set but there is no independent support in input file, and --firs
 def set_up_parser():
     parser = optparse.OptionParser(usage=usage, description=desc)
     parser.add_option("--timeout", metavar="TOUT", dest="timeout", type=int,
-                      default=3000, help="timeout for iteration in seconds (default: %default seconds)")
+                      default=100000, help="timeout for iteration in seconds (default: %default seconds)")
     parser.add_option("--verb,-v", default=1, type=int,
                       dest="verbosity", help="Higher numbers for more verbosity")
     parser.add_option("--noclean", action="store_true", default=False,
@@ -74,6 +74,7 @@ def set_up_parser():
 
 
 if __name__ == "__main__":
+    starttime = time.time()
     parser = set_up_parser()
     (options, args) = parser.parse_args()
 
@@ -136,6 +137,7 @@ if __name__ == "__main__":
                 with open(options.logfile, 'a') as f:
                     f.write("%d:%d:%3.2f\n" % (i, i + attempts, mytime))
         else:
+            print("Finished in T: ", time.time()-starttime)
             print("num independent vars:", len(indvars.split())-1)
             print("** Copy-paste the following line in the top of your CNF for ApproxMC **")
             print("c ind %s" % indvars)
