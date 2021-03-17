@@ -23,8 +23,17 @@ from __future__ import with_statement  # Required in 2.5
 from __future__ import print_function
 
 import os
+import sys
 import time
 import optparse
+
+try:
+    # if we're imported elsewhere, make local binaries find-able
+    PATH = sys.modules[__name__].__file__
+    PATH = PATH[:PATH.index("/mis.py")]
+except:
+    # otherwise, we're being run directly. Assume togmus & muser2 are available
+    PATH = "."
 
 usage = "usage: %prog [options] <input.cnf>"
 desc = """Gives the minimal independent set of the cnf"""
@@ -46,13 +55,13 @@ def set_up_parser():
                       help="use independent support provided in input file")
     parser.add_option("--glucose", action="store_true", default=False,
             dest="glucose", help="Use glucose in muser2. Default: %default")
-    parser.add_option("--muser2bin", type=str, default="./muser2-dir/src/tools/muser2/muser2",
+    parser.add_option("--muser2bin", type=str, default=PATH+"/muser2-dir/src/tools/muser2/muser2",
                       dest="bin", help="muser2 binary to use")
 
     return parser
 
 def mis(inputfile=None, outputfile=None, useind=False, maxiter=1, use_glucose=False,
-        muser2_bin=".muser2-dir/src/tools/muser2/muser2", timeout=0, verbosity=0,
+        muser2_bin=PATH+"/muser2-dir/src/tools/muser2/muser2", timeout=0, verbosity=0,
         noclean=False):
     if outputfile is None:
         outputfile = inputfile + ".ind"
@@ -61,7 +70,7 @@ def mis(inputfile=None, outputfile=None, useind=False, maxiter=1, use_glucose=Fa
     gmusFile = outputfile + '.gcnf'
     tempOutFile = outputfile + '.tcnf'
 
-    togmus_cmd = "./togmus %s %s %s" % (inputfile, gmusFile, useind)
+    togmus_cmd = "%s/togmus %s %s %s" % (PATH, inputfile, gmusFile, useind)
     if verbosity > 0:
         print("Running togmus: '%s'" % togmus_cmd)
     os.system(togmus_cmd)
