@@ -23,9 +23,119 @@ from __future__ import with_statement  # Required in 2.5
 from __future__ import print_function
 
 import os
+import sys
 import time
 import optparse
 
+try:
+    # if we're imported elsewhere, make local binaries find-able
+    PATH = sys.modules[__name__].__file__
+    PATH = PATH[:PATH.index("/mis.py")]
+except:
+    # otherwise, we're being run directly. Assume togmus & muser2 are available
+    PATH = "."
+
+usage = "usage: %prog [options] <input.cnf>"
+desc = """Gives the minimal independent set of the cnf"""
+
+def set_up_parser():
+    parser = optparse.OptionParser(usage=usage, description=desc)
+    parser.add_option("--timeout", metavar="TOUT", dest="timeout", type=int,
+                      default=0, help="timeout for each iteration in seconds. Default: %default. 0 = no timeout")
+    parser.add_option("-v", default=0, type=int,
+            dest="verbosity", help="higher numbers for more verbosity. Default: %default")
+    parser.add_option("--noclean", action="store_true", default=False,
+            dest="noclean", help="don't clean up temporary files. Default: %default")
+    parser.add_option("--out", dest="outputfile", type=str, default=None,
+            help="Output file destination. Default: 'inputfile.ind'")
+    parser.add_option("--maxiter", dest="maxiter", type=int, default=1,
+                      help="up to 'max' number of minimal independent supports will be generated. Default: %default")
+    parser.add_option("--useind", dest="useind", action="store_true",
+                      default=False,
+                      help="use independent support provided in input file")
+    parser.add_option("--glucose", action="store_true", default=False,
+            dest="glucose", help="Use glucose in muser2. Default: %default")
+    parser.add_option("--muser2bin", type=str, default=PATH+"/muser2-dir/src/tools/muser2/muser2",
+                      dest="bin", help="muser2 binary to use")
+
+    return parser
+
+def mis(inputfile=None, outputfile=None, useind=False, maxiter=1, use_glucose=False,
+        muser2_bin=PATH+"/muser2-dir/src/tools/muser2/muser2", timeout=0, verbosity=0,
+        noclean=False):
+    if outputfile is None:
+        outputfile = inputfile + ".ind"
+    
+    mytime = time.time()
+    gmusFile = outputfile + '.gcnf'
+    tempOutFile = outputfile + '.tcnf'
+
+    togmus_cmd = "%s/togmus %s %s %s" % (PATH, inputfile, gmusFile, useind)
+    if verbosity > 0:
+        print("Running togmus: '%s'" % togmus_cmd)
+    os.system(togmus_cmd)
+    if verbosity > 0:
+        print("togmus executed in %-3.2f s" % (time.time()-mytime))
+
+    muser2_cmd = "%s -v 0 -grp -comp -%s -order 4 -T %s %s > %s" % (
+            muser2_bin, "glucose" if use_glucose else "minisats",
+            timeout, gmusFile, tempOutFile)
+    if verbosity > 1:
+        print("Using %s for muser2" % ("glucose" if use_glucose else "minisats"))
+    
+    indMap = set()
+    min_indvars_len = None
+    min_indvars = None
+    # run maxiters iterations
+    for i in range(maxiter):
+        if verbosity > 1:
+            print("Iteration %u" % (i+1))
+        mutime = time.time()
+        if verbosity > 0:
+            print("Running muser2: '%s'" % muser2_cmd)
+        os.system(muser2_cmd)
+        if verbosity > 0:
+            print("muser2 finished in %-3.2f s" % (time.time()-mutime))
+
+        indvars = parseOutput(tempOutFile).strip().lstrip(" v ")
+        indvars_len = len(indvars.split())-1
+        if min_indvars_len is None:
+            min_indvars_len = indvars_len
+        if indvars not in indMap:
+            if verbosity > 1:
+                print("New indvars: %s" % indvars)
+            indMap.add(indvars)
+            if indvars_len <= min_indvars_len:
+                if verbosity > 1:
+                    print("Minimal")
+                min_indvars = indvars
+                min_indvars_len = indvars_len
+            else:
+                if verbosity > 1:
+                    print("Not minimal")
+        else:
+            if verbosity > 1:
+                print("Rediscovered indvars (consider reducing maxiter)")
+
+    if verbosity > 1:
+        print("finished %u iterations in %-3.2f" % (maxiter, time.time()-mytime))
+
+    with open(outputfile, 'a') as f:
+        f.write(min_indvars + "\n")
+        if verbosity > 0:
+            print("Wrote output to %s" % outputfile)
+
+    if not noclean:
+        if verbosity > 1:
+            print("Deleting temporary files")
+        os.unlink(tempOutFile)
+        os.unlink(gmusFile)
+    else:
+        if verbosity > 1:
+            print("noclean selected")
+            print("Leaving temporary files:\n%s\n%s" % (tempOutFile, gmusFile))
+
+    return min_indvars
 
 def parseOutput(fileName):
     with open(fileName, 'r') as f:
@@ -36,44 +146,7 @@ def parseOutput(fileName):
                 return line
         return ''
 
-
-usage = "usage: %prog [options] <input.cnf>"
-desc = """Gives the minimal independent set of the file.
-
-If both --useind is set and --firstinds are specified, the union of both independent supports is considered
-
-If --useind is set but there is no independent support in input file, and --firstinds is not specified, all variables are considered
-"""
-
-
-def set_up_parser():
-    parser = optparse.OptionParser(usage=usage, description=desc)
-    parser.add_option("--timeout", metavar="TOUT", dest="timeout", type=int,
-                      default=100000, help="timeout for iteration in seconds (default: %default seconds)")
-    parser.add_option("--verb,-v", default=1, type=int,
-                      dest="verbosity", help="Higher numbers for more verbosity")
-    parser.add_option("--noclean", action="store_true", default=False,
-                      dest="noclean", help="Don't clean up temporary files")
-
-    parser.add_option("--out", dest="outputfile", type=str, default=None,
-                      help="Output file destination. Default is 'inputfile.ind'")
-    parser.add_option("--log", dest="logfile", type=str, default="log.txt",
-                      help="Log file destination. Deafult : %default")
-    parser.add_option("--maxiter", dest="maxiter", type=int, default=1,
-                      help="up to 'max' number of minimal independent supports will be generated. Default: %default")
-    parser.add_option("--useind", dest="useind", action="store_true",
-                      default=False,
-                      help="use independent support provided in input file")
-    parser.add_option("--glucose", action="store_true", default=False,
-                      dest="glucose", help="Use glucose in muser2")
-    parser.add_option("--muser2bin", type=str, default="./muser2-dir/src/tools/muser2/muser2",
-                      dest="bin", help="muser2 binary to use")
-
-
-    return parser
-
-
-if __name__ == "__main__":
+def main():
     starttime = time.time()
     parser = set_up_parser()
     (options, args) = parser.parse_args()
@@ -84,64 +157,13 @@ if __name__ == "__main__":
 
     inputfile = args[0]
 
-    if options.outputfile is not None:
-        outputfile = options.outputfile
-    else:
-        outputfile = inputfile + ".ind"
+    indvars = mis(inputfile, options.outputfile, options.useind, options.maxiter,
+        options.glucose, options.bin, options.timeout, options.verbosity, options.noclean)
+    
+    print("Finished in %-3.2f seconds" % (time.time()-starttime))
+    print("num independent vars:", len(indvars.split())-1)
+    print("** Copy-paste the following line in the top of your CNF for ApproxMC **")
+    print("c ind %s" % indvars)
 
-    mytime = time.time()
-    gmusFile = outputfile + '.gcnf'
-    tempOutFile = outputfile + '.tcnf'
-
-    f = open(outputfile, 'w')
-    f.close()
-
-    cmd = "./togmus %s %s %s" % (inputfile, gmusFile, options.useind)
-    print("Running togmus: '%s'" % cmd)
-    os.system(cmd)
-    print("togmus executed in %-3.2f" % (time.time()-mytime))
-
-    # run maxiters iterations
-    indMap = {}
-    maxTry = 10
-    attempts = 0
-    for i in range(options.maxiter):
-        mytime = time.time()
-        if options.glucose:
-            cmd = "%s -v 0 -grp -comp -glucose -order 4 -T %s %s > %s" % (
-                    options.bin, options.timeout, gmusFile, tempOutFile)
-        else:
-            cmd = "%s -v 0 -grp -comp -minisats -order 4 -T %s %s > %s" % (
-                    options.bin, options.timeout, gmusFile, tempOutFile)
-        print("Running muser2: '%s'" % cmd)
-        os.system(cmd)
-        print("muser2 executed in %-3.2f" % (time.time()-mytime))
-
-        indvars = parseOutput(tempOutFile)
-        indvars = indvars.strip().lstrip(" v ")
-        if indvars not in indMap:
-            indMap[indvars] = 1
-        else:
-            attempts += 1
-            if attempts >= maxTry:
-                break
-            else:
-                continue
-
-        mytime = time.time() - mytime
-        if options.outputfile is not None:
-            with open(outputfile, 'a') as f:
-                f.write(indvars)
-
-            if options.verbosity == 1:
-                with open(options.logfile, 'a') as f:
-                    f.write("%d:%d:%3.2f\n" % (i, i + attempts, mytime))
-        else:
-            print("Finished in T: ", time.time()-starttime)
-            print("num independent vars:", len(indvars.split())-1)
-            print("** Copy-paste the following line in the top of your CNF for ApproxMC **")
-            print("c ind %s" % indvars)
-
-    if not options.noclean:
-        os.unlink(tempOutFile)
-        os.unlink(gmusFile)
+if __name__ == "__main__":
+    main()
