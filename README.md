@@ -1,19 +1,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-NOTE: **this is an extremely outdated tool**. You probably wan to use [arjun](https://github.com/meelgroup/arjun) instead. It's a **LOT** faster, and if asked for, can also minimize the CNF.
+WARNING: **this is an extremely outdated tool**. You probably want to use [arjun](https://github.com/meelgroup/arjun) instead. It's a **LOT** faster, and if asked for, can also minimize the CNF. Furthermore, ApproxMC now uses Arjun as a preprocessor, and there is no need to use this tool at all for ApproxMC.
+
+# MIS tool
 
 MIS computes *minimal independent support* for a given CNF formula. This means that it gives the user a set of variables that fully determine all the other variables' settings. So for example, if you give it an electronic circuit, it might give you all its input variables. It gives a minimal set, but it may not be the minimum set.
 
 The implementation is based on MIS algorithm by Alexander Ivrii, Sharad Malik, Kuldeep Meel, and Moshe Vardi see [CP'15 paper](http://link.springer.com/article/10.1007/s10601-015-9204-z), which won the Best Student Paper Award. MIS uses [MUSer2](https://bitbucket.org/anton_belov/muser2) by Anton Belov and Joao Marques-Silva, paper [here](https://satassociation.org/jsat/index.php/jsat/article/view/101).
 
-### Docker usage
-Run on a file `formula.cnf` that **must** have a correct DIMACS header `p cnf vars clauses`:
-
-```
-docker run --rm -v `pwd`/formula.cnf:/in msoos/mis /in
-```
-
-### Building
+## Building
 
 ```
 apt-get install minisat2 zlib1g-dev g++
@@ -36,7 +31,7 @@ num independent vars: 19
 ** Copy-paste the following line in the top of your CNF for ApproxMC **
 c ind 3 4 7 8 10 11 14 17 18 26 30 35 36 39 42 47 60 62 67 0
 ```
-The system has found 19 variables to be a minimal independent support. It also prints the exact line you have to copy-paste to the top of your CNF file if you want to use our [ApproxMC](https://github.com/meelgroup/approxmc) approximate model counter. It is *highly* recommended to use MIS before running ApproxMC.
+The system has found 19 variables to be a minimal independent support.
 
 In case the above doesn't terminate, you can push Ctrl+C and it will print the intermediary best independent set. Or you can run the above command with an explicit timeout using the `--timeout` option, giving timeout in seconds:
 
